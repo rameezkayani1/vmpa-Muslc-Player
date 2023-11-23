@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:vmpa/tabs/songs.dart';
 
+import '../tabs/Album.dart';
+import '../tabs/Artist.dart';
+import '../tabs/playlist.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -19,24 +23,24 @@ class _HomeScreenState extends State<HomeScreen> {
             elevation: 0,
             leading: Padding(
               padding: const EdgeInsets.only(left: 10),
-              child: new Image.asset("assets/logo.png",
+              child: Image.asset("assets/logo.png",
                   fit: BoxFit.cover, height: 20.00, width: 20.00),
             ),
-            title: Text(
+            title: const Text(
               "VMPA",
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             ),
-            actions: [
+            actions: const [
               Padding(
-                padding: const EdgeInsets.only(right: 25),
+                padding: EdgeInsets.only(right: 25),
                 child: Icon(
                   Icons.search,
                   color: Colors.black,
                 ),
               ),
             ],
-            bottom: TabBar(
+            bottom: const TabBar(
               tabs: [
                 Tab(
                   child: Text(
@@ -69,12 +73,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          body: TabBarView(
+          body: const TabBarView(
             children: [
               Songpage(),
-              Icon(Icons.album, size: 350),
-              Icon(Icons.person, size: 350),
-              Icon(Icons.playlist_add, size: 350),
+              MusicAlbum(),
+              Artist(),
+              // playlist(),
             ],
           ),
         ));

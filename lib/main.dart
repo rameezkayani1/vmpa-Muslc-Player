@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-import 'home.dart';
-import 'introscreen.dart';
-import 'splash.dart';
+import 'Screens/home.dart';
+import 'Screens/introscreen.dart';
+import 'Screens/splash.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,13 +15,12 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       routes: {
-        "/":(context) => const SplashScreen(),
-         "IntroScreen":(context) => const IntroScreen(),
-         "HomeScreen":(context) => const HomeScreen(),
-
+        "/": (context) => const SplashScreen(),
+        "IntroScreen": (context) => const IntroScreen(),
+        "HomeScreen": (context) => const HomeScreen(),
       },
       title: 'VMPA',
       // theme: ThemeData(
