@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vmpa/Screens/test.dart';
 import 'package:vmpa/tabs/songs.dart';
 
 import '../tabs/Album.dart';
@@ -78,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Songpage(),
               MusicAlbum(),
               Artist(),
+              Songpage1(),
               // playlist(),
             ],
           ),

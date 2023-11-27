@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -15,6 +17,8 @@ class PlayerScreen extends StatefulWidget {
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
+  bool showRecommendations = false;
+
   @override
   Widget build(BuildContext context) {
     var controller = Get.find<PlayerController>();
@@ -124,108 +128,155 @@ class _PlayerScreenState extends State<PlayerScreen> {
                         ),
                         Obx(
                           () => Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            // mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              IconButton(
-                                  onPressed: () {
-                                    controller.playSong(
-                                        widget
-                                            .data[
-                                                controller.playindex.value - 1]
-                                            .uri,
-                                        controller.playindex.value - 1);
-                                  },
-                                  icon: Icon(
-                                    Icons.skip_previous,
-                                    color: Colors.white,
-                                    size: 40,
-                                  )),
-                              CircleAvatar(
-                                radius: 34,
-                                backgroundColor: Colors.blueAccent,
-                                child: Transform.scale(
-                                  scale: 2.2,
-                                  child: IconButton(
-                                    onPressed: () {
-                                      if (controller.isplaying.value) {
-                                        controller.player.pause();
-                                        controller.isplaying(false);
-                                        // Pause action
-                                      } else {
-                                        controller.player.play();
-                                        controller.isplaying(true);
+//
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        IconButton(
+                                            onPressed: () {
+                                              controller.playSong(
+                                                  widget
+                                                      .data[controller
+                                                              .playindex.value -
+                                                          1]
+                                                      .uri,
+                                                  controller.playindex.value -
+                                                      1);
+                                            },
+                                            icon: Icon(
+                                              Icons.skip_previous,
+                                              color: Colors.white,
+                                              size: 40,
+                                            )),
+                                        CircleAvatar(
+                                          radius: 34,
+                                          backgroundColor: Colors.blueAccent,
+                                          child: Transform.scale(
+                                            scale: 2.2,
+                                            child: IconButton(
+                                              onPressed: () {
+                                                if (controller
+                                                    .isplaying.value) {
+                                                  controller.player.pause();
+                                                  controller.isplaying(false);
+                                                  // Pause action
+                                                } else {
+                                                  controller.player.play();
+                                                  controller.isplaying(true);
 
-                                        // Play action
-                                      }
-                                    },
+                                                  // Play action
+                                                }
+                                              },
 
-                                    icon: Icon(
-                                      controller.isplaying.value
-                                          ? Icons.pause
-                                          : Icons.play_arrow,
-                                      color: Colors.white,
-                                      size: 32,
+                                              icon: Icon(
+                                                controller.isplaying.value
+                                                    ? Icons.pause
+                                                    : Icons.play_arrow,
+                                                color: Colors.white,
+                                                size: 32,
+                                              ),
+                                              // ),
+                                              // IconButton(
+                                              //     onPressed: () {
+                                              //       if (controller.isplaying.value) {
+                                              //         controller.player.pause();
+                                              //         controller.isplaying(false);
+                                              //       } else {
+                                              //         controller.player.play();
+                                              //         controller.isplaying(true);
+                                              //       }
+                                              //       ;
+                                              //     },
+                                            ),
+                                          ),
+                                        ),
+                                        IconButton(
+                                            onPressed: () {
+                                              controller.playSong(
+                                                  widget
+                                                      .data[controller
+                                                              .playindex.value +
+                                                          1]
+                                                      .uri,
+                                                  controller.playindex.value +
+                                                      1);
+                                            },
+                                            icon: Icon(
+                                              Icons.skip_next,
+                                              color: Colors.white,
+                                              size: 40,
+                                            )),
+                                      ],
                                     ),
-                                    // ),
-                                    // IconButton(
-                                    //     onPressed: () {
-                                    //       if (controller.isplaying.value) {
-                                    //         controller.player.pause();
-                                    //         controller.isplaying(false);
-                                    //       } else {
-                                    //         controller.player.play();
-                                    //         controller.isplaying(true);
-                                    //       }
-                                    //       ;
-                                    //     },
-                                  ),
+                                  ],
                                 ),
                               ),
-                              IconButton(
-                                  onPressed: () {
-                                    controller.playSong(
-                                        widget
-                                            .data[
-                                                controller.playindex.value + 1]
-                                            .uri,
-                                        controller.playindex.value + 1);
-                                  },
-                                  icon: Icon(
-                                    Icons.skip_next,
-                                    color: Colors.white,
-                                    size: 40,
-                                  ))
+
+                              Column(
+                                // mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Row(
+                                    // mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      IconButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              showRecommendations =
+                                                  !showRecommendations;
+                                              print(showRecommendations);
+                                            });
+                                          },
+                                          icon: Icon(
+                                            Icons.next_plan_sharp,
+                                            color: Colors.white,
+                                            size: 40,
+                                          )),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Container(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            "Recommendations:",
-                            style: TextStyle(color: Colors.white, fontSize: 15),
-                          ),
-                        ),
-                        Expanded(
-                          child: RecommendationsWidget(
-                            recommendations: widget.data.sublist(
-                              controller.playindex.value + 1,
-                              controller.playindex.value + 4,
-                            ),
-                            // Pass a callback to handle song selection
-                            onSongSelected: (index) {
-                              // Scroll to the top
-                              Scrollable.ensureVisible(
-                                context,
-                                duration: Duration(milliseconds: 500),
-                              );
 
-                              // Play the selected song
-                              controller.playSong(
-                                  widget.data[index].uri, index);
-                            },
+                        // Container(
+                        //   alignment: Alignment.topLeft,
+                        //   child: Text(
+                        //     "Up Next:",
+                        //     style: TextStyle(color: Colors.white, fontSize: 15),
+                        //   ),
+                        // ),
+                        Visibility(
+                          visible: showRecommendations,
+                          child: Expanded(
+                            child: RecommendationsWidget(
+                              recommendations: widget.data.sublist(
+                                controller.playindex.value + 1,
+                                controller.playindex.value + 4,
+                              ),
+                              // Pass a callback to handle song selection
+                              onSongSelected: (index) {
+                                // Scroll to the top
+                                Scrollable.ensureVisible(
+                                  context,
+                                  duration: Duration(milliseconds: 500),
+                                );
+
+                                // Play the selected song
+                                // controller.playSong(
+                                //     widget.data[index + 1].uri, index + 1);
+                                int actualIndex =
+                                    controller.playindex.value + 1 + index;
+                                controller.playSong(
+                                    widget.data[actualIndex].uri, actualIndex);
+                              },
+                            ),
                           ),
                         ),
                       ],

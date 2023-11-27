@@ -1,154 +1,88 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:vmpa/widget/songscontoller.dart';
+import 'package:flutter/material.dart';
 
-import '../widget/songscontoller.dart';
+import '../Screens/playerScreen.dart';
+// ...
 
-class PlayerScreen extends StatefulWidget {
-  final SongModel data;
-
-  const PlayerScreen({Key? key, required this.data}) : super(key: key);
+class Songpage1 extends StatefulWidget {
+  const Songpage1({Key? key});
 
   @override
-  State<PlayerScreen> createState() => _PlayerScreenState();
+  State<Songpage1> createState() => _Songpage1State();
 }
 
-class _PlayerScreenState extends State<PlayerScreen> {
+class _Songpage1State extends State<Songpage1> {
+  var controller = Get.put(PlayerController());
+
   @override
   Widget build(BuildContext context) {
-    var controller = Get.put(PlayerController());
-
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Expanded(
-                child: Container(
-                  alignment: Alignment.center,
-                  decoration:
-                      BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-                  child: QueryArtworkWidget(
-                    id: widget.data.id,
-                    type: ArtworkType.AUDIO,
-                    nullArtworkWidget: Icon(
-                      Icons.music_note,
-                      color: Colors.white,
-                      size: 32,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Expanded(
-                child: Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(16)),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        widget.data.displayNameWOExt,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                      Text(
-                        widget.data.artist.toString(),
-                        style: TextStyle(
-                          color: Colors.grey,
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      // Row(
-                      //   children: [
-                      //     Text(
-                      //       // controller.formatDuration(controller.position),
-                      //       style: TextStyle(color: Colors.grey),
-                      //     ),
-                      //     Expanded(
-                      //       child: Slider(
-                      //         // value: controller.position.inSeconds.toDouble(),
-                      //         // max: controller.duration.inSeconds.toDouble(),
-                      //         onChanged: (newValue) {
-                      //           // Handle slider value change
-                      //           // You might want to seek the player to the new position
-                      //           controller.seekTo(Duration(seconds: newValue.toInt()));
-                      //         },
-                      //       ),
-                      //     ),
-                      //   Text(
-                      //     controller.formatDuration(controller.duration),
-                      //     style: TextStyle(color: Colors.grey),
-                      //   ),
-                      // ],
-                      // ),
-                      SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.shuffle),
-                          ),
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.skip_previous, size: 40),
-                          ),
-                          Obx(
-                            () => CircleAvatar(
-                              radius: 34,
-                              backgroundColor: Colors.black,
-                              child: Transform.scale(
-                                scale: 2.5,
-                                child: IconButton(
-                                  onPressed: () {
-                                    if (controller.playSong(
-                                        widget.data.uri.toString(),
-                                        widget.data)) {
-                                      controller.player.pause();
-                                    } else {
-                                      controller.player.play();
-                                    }
-                                  },
-                                  icon: Icon(
-                                    controller.isplaying.value
-                                        ? Icons.pause
-                                        : Icons.play_arrow,
-                                    color: Colors.white,
-                                    size: 32,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.skip_next, size: 40),
-                          ),
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.repeat),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+    return Stack(
+      children: [
+        Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF1D1B29), Color(0xFF4527A0)],
+            ),
           ),
         ),
-      ),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          body: FutureBuilder<List<AlbumModel>>(
+            future: OnAudioQuery().queryAlbums(),
+            builder: (BuildContext context,
+                AsyncSnapshot<List<AlbumModel>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Center(child: Text('No Albums Found'));
+              } else {
+                List<AlbumModel> albums = snapshot.data!;
+
+                return Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: ListView.builder(
+                    itemCount: albums.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return ListTile(
+                        title: Text(
+                          albums[index].album,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                        onTap: () {
+                          // Handle album tap (e.g., navigate to album details screen)
+                        },
+                        subtitle: Text(
+                          "${albums[index].album} songs",
+                          style: TextStyle(fontSize: 12, color: Colors.white),
+                        ),
+                        leading: QueryArtworkWidget(
+                          id: albums[index].id,
+                          type: ArtworkType.ALBUM,
+                          nullArtworkWidget: Icon(
+                            Icons.album,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 }

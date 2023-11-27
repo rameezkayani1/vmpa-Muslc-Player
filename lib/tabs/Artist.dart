@@ -3,87 +3,87 @@ import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:vmpa/widget/songscontoller.dart';
 
+import '../Screens/artistmusic.dart';
+
+// ...
+
 class Artist extends StatefulWidget {
-  const Artist({super.key});
+  const Artist({Key? key});
 
   @override
   State<Artist> createState() => _ArtistState();
 }
 
 class _ArtistState extends State<Artist> {
+  var controller = Get.put(PlayerController());
+
   @override
   Widget build(BuildContext context) {
-    var controller = Get.put(PlayerController());
-
-    return Stack(children: [
-      Container(
+    return Stack(
+      children: [
+        Container(
           width: double.infinity,
           decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [Color(0xFF1D1B29), Color(0xFF4527A0)]))),
-      Scaffold(
-        backgroundColor: Colors.transparent,
-        body: FutureBuilder<List<SongModel>>(
-            future: controller.audioQuery.querySongs(
-              ignoreCase: true,
-              orderType: OrderType.ASC_OR_SMALLER,
-              // sortType: null,
-              uriType: UriType.EXTERNAL,
+            gradient: LinearGradient(
+              colors: [Color(0xFF1D1B29), Color(0xFF4527A0)],
             ),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.hasData) {
-                List snap = snapshot.data;
-                if (snapshot.data == null) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (snapshot.data!.isEmpty) {
-                  return Center(
-                    child: Text("No Song Found"),
-                  );
-                } else {
-                  return Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: ListView.builder(
-                        itemCount: snap.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(32)),
-                            child: ListTile(
-                              title: Text(
-                                " ${snapshot.data![index].artist}}",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
-                                    color: Colors.white),
-                              ),
-                              onTap: () {
-                                // Get.to(() => PlayerScreen);
-                                // Navigator.push(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //         builder: (context) => PlayerScreen()));
-                              },
-                              leading: QueryArtworkWidget(
-                                id: snapshot.data![index].id,
-                                type: ArtworkType.AUDIO,
-                                nullArtworkWidget: Icon(
-                                  Icons.music_note,
-                                  color: Colors.white,
-                                  size: 32,
-                                ),
-                              ),
-                            ),
-                          );
-                        }),
-                  );
-                }
-              } else {
+          ),
+        ),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          body: FutureBuilder<List<ArtistModel>>(
+            future: OnAudioQuery().queryArtists(),
+            builder: (BuildContext context,
+                AsyncSnapshot<List<ArtistModel>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Center(child: Text('No Artists Found'));
+              } else {
+                List<ArtistModel> artists = snapshot.data!;
+
+                return Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: ListView.builder(
+                    itemCount: artists.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return ListTile(
+                        title: Text(
+                          artists[index].artist,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                        onTap: () {
+                          Get.to(
+                              () => ArtistMusicScreen(artist: artists[index]));
+                        },
+                        subtitle: Text(
+                          "${artists[index].numberOfAlbums} albums",
+                          style: TextStyle(fontSize: 12, color: Colors.white),
+                        ),
+                        leading: QueryArtworkWidget(
+                          id: artists[index].id,
+                          type: ArtworkType.ARTIST,
+                          nullArtworkWidget: Icon(
+                            Icons.person,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
               }
-            }),
-      ),
-    ]);
+            },
+          ),
+        ),
+      ],
+    );
   }
 }
