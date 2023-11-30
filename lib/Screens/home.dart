@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:vmpa/Screens/test.dart';
 import 'package:vmpa/tabs/songs.dart';
 
 import '../tabs/Album.dart';
 import '../tabs/Artist.dart';
-import '../tabs/playlist.dart';
+import '../tabs/search.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -32,12 +31,18 @@ class _HomeScreenState extends State<HomeScreen> {
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             ),
-            actions: const [
+            actions: [
               Padding(
                 padding: EdgeInsets.only(right: 25),
-                child: Icon(
-                  Icons.search,
-                  color: Colors.black,
+                child: IconButton(
+                  icon: Icon(
+                    Icons.search,
+                    color: Colors.black,
+                  ),
+                  onPressed: () {
+                    showSearch(
+                        context: context, delegate: MusicSearchDelegate());
+                  },
                 ),
               ),
             ],
@@ -79,7 +84,9 @@ class _HomeScreenState extends State<HomeScreen> {
               Songpage(),
               MusicAlbum(),
               Artist(),
-              Songpage1(),
+              // PlaylistPage(),
+
+              // PlaylistManagementPage(playlists: playlists,),
               // playlist(),
             ],
           ),

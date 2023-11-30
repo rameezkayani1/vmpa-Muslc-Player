@@ -1,88 +1,155 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-import 'package:get/get.dart';
-import 'package:on_audio_query/on_audio_query.dart';
-import 'package:vmpa/widget/songscontoller.dart';
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
+// import 'package:on_audio_query/on_audio_query.dart';
+// import 'package:get/get.dart';
+// import 'package:vmpa/widget/songscontoller.dart';
 
-import '../Screens/playerScreen.dart';
-// ...
+// import '../widget/playlistdetail.dart';
 
-class Songpage1 extends StatefulWidget {
-  const Songpage1({Key? key});
+// class PlaylistPage extends StatefulWidget {
+//   const PlaylistPage({Key? key}) : super(key: key);
 
-  @override
-  State<Songpage1> createState() => _Songpage1State();
-}
+//   @override
+//   _PlaylistPageState createState() => _PlaylistPageState();
+// }
 
-class _Songpage1State extends State<Songpage1> {
-  var controller = Get.put(PlayerController());
+// class _PlaylistPageState extends State<PlaylistPage> {
+//   late List<PlaylistModel> playlists;
+//   var controller = Get.put(PlayerController());
 
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          width: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF1D1B29), Color(0xFF4527A0)],
-            ),
-          ),
-        ),
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          body: FutureBuilder<List<AlbumModel>>(
-            future: OnAudioQuery().queryAlbums(),
-            builder: (BuildContext context,
-                AsyncSnapshot<List<AlbumModel>> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Center(child: Text('No Albums Found'));
-              } else {
-                List<AlbumModel> albums = snapshot.data!;
+//   @override
+//   void initState() {
+//     super.initState();
+//     loadPlaylists();
+//   }
 
-                return Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: ListView.builder(
-                    itemCount: albums.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return ListTile(
-                        title: Text(
-                          albums[index].album,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                        ),
-                        onTap: () {
-                          // Handle album tap (e.g., navigate to album details screen)
-                        },
-                        subtitle: Text(
-                          "${albums[index].album} songs",
-                          style: TextStyle(fontSize: 12, color: Colors.white),
-                        ),
-                        leading: QueryArtworkWidget(
-                          id: albums[index].id,
-                          type: ArtworkType.ALBUM,
-                          nullArtworkWidget: Icon(
-                            Icons.album,
-                            color: Colors.white,
-                            size: 32,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                );
-              }
-            },
-          ),
-        ),
-      ],
-    );
-  }
-}
+//   Future<void> loadPlaylists() async {
+//     playlists = await controller.audioQuery.queryPlaylists();
+//     setState(() {});
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Stack(
+//       children: [
+//         Container(
+//           width: double.infinity,
+//           decoration: const BoxDecoration(
+//             gradient: LinearGradient(
+//               colors: [Color(0xFF1D1B29), Color(0xFF4527A0)],
+//             ),
+//           ),
+//         ),
+//         Scaffold(
+//           backgroundColor: Colors.transparent,
+//           appBar: AppBar(
+//             title: Text('Playlists'),
+//             backgroundColor: Colors.transparent,
+//             elevation: 0,
+//           ),
+//           body: playlists.isEmpty
+//               ? Center(child: Text('No Playlists Found'))
+//               : Padding(
+//                   padding: EdgeInsets.all(10.0),
+//                   child: ListView.builder(
+//                     itemCount: playlists.length,
+//                     itemBuilder: (BuildContext context, int index) {
+//                       return Container(
+//                         decoration: BoxDecoration(
+//                           borderRadius: BorderRadius.circular(32),
+//                         ),
+//                         child: ListTile(
+//                           title: Text(
+//                             playlists[index].playlist,
+//                             style: TextStyle(
+//                               fontWeight: FontWeight.bold,
+//                               fontSize: 12,
+//                               color: Colors.white,
+//                             ),
+//                           ),
+//                           onTap: () {
+//                             // Implement logic to navigate to the playlist details page
+//                             // You can pass the playlist ID or other relevant information
+//                             // Navigator.push(
+//                             //   context,
+//                             //   MaterialPageRoute(
+//                             //     builder: (context) => PlaylistDetailsPage(
+//                             //         playlist: playlists[index]),
+//                             //   ),
+//                             // );
+//                           },
+//                           trailing: IconButton(
+//                             icon: Icon(
+//                               Icons.play_circle_filled,
+//                               color: Colors.white,
+//                               size: 32,
+//                             ),
+//                             onPressed: () {
+//                               // Implement logic to play all songs in the playlist
+//                               // You can use the playlist ID to fetch songs associated with the playlist
+//                             },
+//                           ),
+//                         ),
+//                       );
+//                     },
+//                   ),
+//                 ),
+//           floatingActionButton: FloatingActionButton(
+//             onPressed: () {
+//               showAddToPlaylistDialog(context);
+//             },
+//             child: Icon(Icons.add),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+
+//   void showAddToPlaylistDialog(BuildContext context) async {
+//     if (playlists.isEmpty) {
+//       Get.snackbar('No Playlists', 'Create a playlist first!');
+//       return;
+//     }
+
+//     await Get.dialog(
+//       AlertDialog(
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(20.0),
+//         ),
+//         title: Text(
+//           'Add to Playlist',
+//           style: TextStyle(fontWeight: FontWeight.bold),
+//         ),
+//         content: SingleChildScrollView(
+//           child: Container(
+//             height: 120,
+//             child: Column(
+//               children: [
+//                 for (var playlist in playlists)
+//                   ListTile(
+//                     title: Text(playlist.playlist),
+//                     onTap: () {
+//                       addToPlaylist(context, playlist);
+//                     },
+//                   ),
+//               ],
+//             ),
+//           ),
+//         ),
+//         actions: <Widget>[
+//           TextButton(
+//             onPressed: () {
+//               Get.back(); // Close the dialog
+//             },
+//             child: Text('Cancel'),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   void addToPlaylist(BuildContext context, PlaylistModel playlist) {
+//     // Implement logic to add the song to the selected playlist using queryPlaylists() or other methods
+//     // You may want to display a confirmation message or perform any necessary actions
+//     Get.back(); // Close the dialog
+//   }
+// }

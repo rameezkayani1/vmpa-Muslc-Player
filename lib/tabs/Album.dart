@@ -4,6 +4,8 @@ import 'package:on_audio_query/on_audio_query.dart';
 import 'package:vmpa/widget/songscontoller.dart';
 import 'package:flutter/material.dart';
 
+import '../Screens/albummusic.dart';
+
 // ...
 
 class MusicAlbum extends StatefulWidget {
@@ -58,6 +60,8 @@ class _MusicAlbumState extends State<MusicAlbum> {
                           ),
                         ),
                         onTap: () {
+                          Get.to(() => AlbumSongsScreen(album: albums[index]));
+
                           // Handle album tap (e.g., navigate to album details screen)
                         },
                         subtitle: Text(

@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
         "HomeScreen": (context) => const HomeScreen(),
       },
       title: 'VMPA',
+      color: Colors.transparent,
       // theme: ThemeData(
       //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       //   useMaterial3: true,

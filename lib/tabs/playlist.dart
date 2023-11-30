@@ -1,35 +1,37 @@
+// import 'package:flutter/material.dart';
 // import 'package:get/get.dart';
-// import 'package:on_audio_query/on_audio_query.dart';
-// // import '../widget/classmodel.dart';
 
-// class PlaylistController extends GetxController {
-  
-//   RxList<PlaylistModel> playlists = <PlaylistModel>[].obs;
+// import '../widget/classmodel.dart';
+// import '../widget/songscontoller.dart';
 
-//   void addSongToPlaylist(SongModel song, PlaylistModel playlist) {
-//     playlist.songs.add(song);
-//   }
+// class PlaylistsPage extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     var controller = Get.put(PlayerController());
 
-//   void createPlaylist(String playlistName) {
-//     playlists.add(PlaylistModel(playlistName: playlistName, songs: []));
-//   }
+//     // Query playlists
+//     List<PlaylistModel> playlists = [];
+//     // var controller = Get.put(PlayerController());
 
-//   void editPlaylist(PlaylistModel playlist, String newPlaylistName) {
-//     playlist.playlistName = newPlaylistName;
-//   }
-// }
-// class PlaylistController extends GetxController {
-//   RxList<PlaylistModel> playlists = <PlaylistModel>[].obs;
+//     try {
+//       playlists = controller.audioQuery.queryPlaylists() as List<PlaylistModel>;
+//     } catch (e) {
+//       print("Error querying playlists: $e");
+//     }
 
-//   void addSongToPlaylist(SongModel song, PlaylistModel playlist) {
-//     playlist.songs.add(song);
-//   }
-
-//   void createPlaylist(String playlistName) {
-//     playlists.add(PlaylistModel(playlistName: playlistName, songs: []));
-//   }
-
-//   void editPlaylist(PlaylistModel playlist, String newPlaylistName) {
-//     playlist.playlistName = newPlaylistName;
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Playlists'),
+//       ),
+//       body: ListView.builder(
+//         itemCount: playlists.length,
+//         itemBuilder: (context, index) {
+//           return ListTile(
+//             title: Text(playlists[index].playlistName),
+//             // Add onTap functionality if needed
+//           );
+//         },
+//       ),
+//     );
 //   }
 // }

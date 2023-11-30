@@ -14,10 +14,10 @@ class Songpage extends StatefulWidget {
 }
 
 class _SongpageState extends State<Songpage> {
+  var controller = Get.put(PlayerController());
+
   @override
   Widget build(BuildContext context) {
-    var controller = Get.put(PlayerController());
-
     return Stack(children: [
       Container(
           width: double.infinity,
@@ -134,10 +134,74 @@ class _SongpageState extends State<Songpage> {
                                             ListTile(
                                               leading: Icon(Icons.playlist_add),
                                               title: Text('Ad to Playlist'),
+                                              onTap: () async {
+                                                print("on tap");
+                                                Get.back();
+
+                                                await Get.dialog(
+                                                  AlertDialog(
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20.0), // Set the radius here
+                                                    ),
+                                                    title: Text(
+                                                      'Add to Playlist',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                    content:
+                                                        SingleChildScrollView(
+                                                      child: Container(
+                                                        height: 120,
+                                                        // width: double.infinity,
+                                                        child: Column(
+                                                          children: [
+                                                            ListTile(
+                                                              title: Text(
+                                                                  'Create New Playlist'),
+                                                              onTap: () {},
+                                                            ),
+                                                            // Divider(),
+                                                            // for (var playlist in playlists)
+                                                            ListTile(
+                                                              title: Text(
+                                                                  "already created"),
+                                                              onTap: () {
+                                                                // onPressedAddToPlaylist(playlist.playlist);
+                                                              },
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          // TODO: Implement logic to add the song to the playlist
+                                                          // Get.back(); // Close the dialog
+                                                        },
+                                                        child: Text('Add'),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Get.back(); // Close the dialog
+                                                        },
+                                                        child: Text('Cancel'),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+
+                                                // Close the bottom sheet after showing the dialog box
+                                              },
                                             ),
                                             ListTile(
                                               leading: Icon(Icons.share),
                                               title: Text('Share'),
+                                              onTap: () {},
                                             ),
                                             SizedBox(
                                               height: 0,
@@ -174,5 +238,3 @@ class _SongpageState extends State<Songpage> {
     ]);
   }
 }
-//
-//
