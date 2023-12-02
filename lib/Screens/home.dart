@@ -84,6 +84,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Songpage(),
               MusicAlbum(),
               Artist(),
+              MusicAlbum(),
+
               // PlaylistPage(),
 
               // PlaylistManagementPage(playlists: playlists,),
