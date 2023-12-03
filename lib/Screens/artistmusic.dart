@@ -1,5 +1,7 @@
 // artist_music_screen.dart
 
+// ignore_for_file: sized_box_for_whitespace, prefer_const_literals_to_create_immutables
+
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:get/get.dart';
@@ -33,11 +35,11 @@ class _ArtistMusicScreenState extends State<ArtistMusicScreen> {
       Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
           title: Text(widget.artist.artist),
         ),
         body: FutureBuilder<List<SongModel>>(
           future: controller.audioQuery.querySongs(
-            // id: widget.artist.artist.i,
             ignoreCase: true,
             sortType: null,
             uriType: UriType.EXTERNAL,
@@ -52,16 +54,24 @@ class _ArtistMusicScreenState extends State<ArtistMusicScreen> {
               return Center(
                   child: Text('No Songs Found for ${widget.artist.artist}'));
             } else {
-              List<SongModel> songs = snapshot.data!;
+              List<SongModel> allSongs = snapshot.data!;
+              List<SongModel> artistSongs = allSongs
+                  .where((song) => song.artistId == widget.artist.id)
+                  .toList();
+
+              if (artistSongs.isEmpty) {
+                return Center(
+                    child: Text('No Songs Found for ${widget.artist.artist}'));
+              }
 
               return Padding(
                 padding: EdgeInsets.all(10.0),
                 child: ListView.builder(
-                  itemCount: songs.length,
+                  itemCount: artistSongs.length,
                   itemBuilder: (BuildContext context, int index) {
                     return ListTile(
                       title: Text(
-                        songs[index].displayNameWOExt,
+                        artistSongs[index].displayNameWOExt,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
@@ -70,17 +80,17 @@ class _ArtistMusicScreenState extends State<ArtistMusicScreen> {
                       ),
                       onTap: () {
                         Get.to(
-                          () => PlayerScreen(data: songs),
+                          () => PlayerScreen(data: artistSongs),
                           transition: Transition.downToUp,
                         );
-                        controller.playSong(songs[index].uri, index);
+                        controller.playSong(artistSongs[index].uri, index);
                       },
                       subtitle: Text(
-                        " ${songs[index].artist}",
+                        " ${artistSongs[index].artist}",
                         style: TextStyle(fontSize: 12, color: Colors.white),
                       ),
                       leading: QueryArtworkWidget(
-                        id: songs[index].id,
+                        id: artistSongs[index].id,
                         type: ArtworkType.AUDIO,
                         nullArtworkWidget: Icon(
                           Icons.music_note,

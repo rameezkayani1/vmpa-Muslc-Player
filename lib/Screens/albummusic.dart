@@ -1,6 +1,9 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:vmpa/Screens/playerScreen.dart';
 import '../widget/songscontoller.dart';
 
 class AlbumSongsScreen extends StatelessWidget {
@@ -12,74 +15,131 @@ class AlbumSongsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var controller = Get.find<PlayerController>();
 
-    return Stack(children: [
-      Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF1D1B29), Color(0xFF4527A0)],
+    return Stack(
+      children: [
+        Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF1D1B29), Color(0xFF4527A0)],
+            ),
           ),
         ),
-      ),
-      Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: Text(album.album),
-        ),
-        body: FutureBuilder<List<SongModel>>(
-          future: OnAudioQuery().queryAudiosFrom(
-            AudiosFromType.ALBUM,
-            album,
-            // sortType: SortType.DEFAULT,
-            orderType: OrderType.ASC_OR_SMALLER,
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            title: Text(
+              "Songs in ${album.album}",
+              style: TextStyle(fontSize: 16),
+            ),
           ),
-          builder:
-              (BuildContext context, AsyncSnapshot<List<SongModel>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text('No Songs Found for ${album.album}'));
-            } else {
-              List<SongModel> songs = snapshot.data!;
+          body: FutureBuilder<List<SongModel>>(
+            future: OnAudioQuery().querySongs(
+              ignoreCase: true,
+              sortType: null,
+              uriType: UriType.EXTERNAL,
+            ),
+            builder: (BuildContext context,
+                AsyncSnapshot<List<SongModel>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Center(child: Text('No Songs Found for ${album.album}'));
+              } else {
+                List<SongModel> songs = snapshot.data!;
 
-              return Padding(
-                padding: EdgeInsets.all(10.0),
-                child: ListView.builder(
-                  itemCount: songs.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListTile(
-                      title: Text(
-                        songs[index].displayName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                // Filter songs based on the selected album
+                List<SongModel> albumSongs =
+                    songs.where((song) => song.albumId == album.id).toList();
+
+                return Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: ListView.builder(
+                    itemCount: albumSongs.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return ListTile(
+                        title: Text(
+                          albumSongs[index].displayName,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              color: Colors.white),
                         ),
-                      ),
-                      onTap: () {
-                        // Handle song tap (e.g., play the selected song)
-                        controller.playSong(songs[index].uri, index);
-                      },
-                      // subtitle: Text(songs[index].artist),
-                      // leading: CircleAvatar(
-                      //   backgroundImage: QueryArtworkWidget(
-                      //     id: songs[index].id,
-                      //     type: ArtworkType.AUDIO,
-                      //     nullArtworkWidget: Icon(
-                      //       Icons.music_note,
-                      //       size: 32,
-                      //     ),
-                      //   ).imageProvider,
-                      // ),
-                    );
-                  },
-                ),
-              );
-            }
-          },
+                        onTap: () {
+                          // Handle song tap (e.g., play the selected song)
+                          Get.to(
+                            () => PlayerScreen(data: albumSongs),
+                            transition: Transition.downToUp,
+                          );
+                          controller.playSong(albumSongs[index].uri, index);
+                        },
+                        subtitle: Text(albumSongs[index].artist.toString()),
+                        leading: QueryArtworkWidget(
+                          id: albumSongs[index].id,
+                          type: ArtworkType.AUDIO,
+                          nullArtworkWidget: Icon(
+                            Icons.music_note,
+                            size: 32,
+                            color: Colors.white,
+                          ),
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(
+                            Icons.more_vert,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                          onPressed: () {
+                            showModalBottomSheet(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                              context: context,
+                              builder: (context) {
+                                return Container(
+                                  height: 250,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      ListTile(
+                                        leading: Icon(Icons.playlist_add),
+                                        title: Text('Add to Playlist'),
+                                      ),
+                                      ListTile(
+                                        leading: Icon(Icons.share),
+                                        title: Text('Share'),
+                                      ),
+                                      SizedBox(
+                                        height: 0,
+                                      ),
+                                      ListTile(
+                                        leading: Icon(Icons.details_outlined),
+                                        title: Text('Details'),
+                                      ),
+                                      ListTile(
+                                        leading: Icon(Icons.delete_forever),
+                                        title: Text('Delete'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }
+            },
+          ),
         ),
-      )
-    ]);
+      ],
+    );
   }
 }
