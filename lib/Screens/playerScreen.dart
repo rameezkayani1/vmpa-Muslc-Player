@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-
+import 'dart:math';
 import '../widget/RecommendedSongs.dart';
 import '../widget/songscontoller.dart';
 
@@ -18,11 +18,10 @@ class PlayerScreen extends StatefulWidget {
 
 class _PlayerScreenState extends State<PlayerScreen> {
   bool showRecommendations = false;
+  var controller = Get.find<PlayerController>();
 
   @override
   Widget build(BuildContext context) {
-    var controller = Get.find<PlayerController>();
-
     return Stack(
       children: [
         Container(
@@ -264,11 +263,18 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                         children: [
                                           IconButton(
                                             onPressed: () {
-                                              setState(() {
-                                                showRecommendations =
-                                                    !showRecommendations;
-                                                print(showRecommendations);
-                                              });
+                                              List<SongModel> recommendedSongs =
+                                                  getRandomSongs();
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      RecommendedSongsPage(
+                                                    recommendedSongs:
+                                                        recommendedSongs,
+                                                  ),
+                                                ),
+                                              );
                                             },
                                             icon: Icon(
                                               Icons.next_plan_sharp,
@@ -283,24 +289,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                 ],
                               ),
                             ),
-                            Visibility(
-                              visible: showRecommendations,
-                              child: Expanded(
-                                child: RecommendationsWidget(
-                                  recommendations: widget.data.sublist(
-                                    controller.playindex.value + 1,
-                                    controller.playindex.value + 4,
-                                  ),
-                                  onSongSelected: (index) {
-                                    int actualIndex =
-                                        controller.playindex.value + 1 + index;
-                                    controller.playSong(
-                                        widget.data[actualIndex].uri,
-                                        actualIndex);
-                                  },
-                                ),
-                              ),
-                            ),
                           ],
                         ),
                       ),
@@ -313,5 +301,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
         ),
       ],
     );
+  }
+
+  List<SongModel> getRandomSongs() {
+    List<SongModel> shuffledSongs = List.from(widget.data);
+    shuffledSongs.shuffle();
+    return shuffledSongs.take(10).toList();
   }
 }
