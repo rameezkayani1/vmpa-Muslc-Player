@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:get/get.dart';
-// import 'package:share/share_plus.dart';
 import '../Screens/playerScreen.dart';
 import '../widget/songscontoller.dart';
 

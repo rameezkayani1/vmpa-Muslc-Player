@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:vmpa/widget/songscontoller.dart';
 import 'package:flutter/material.dart';
-
+// import 'package:share_plus/share_plus.dart';
 import '../Screens/playerScreen.dart';
 
 class Songpage extends StatefulWidget {
@@ -160,6 +160,9 @@ class _SongpageState extends State<Songpage> {
                                                         child: Column(
                                                           children: [
                                                             ListTile(
+                                                              leading: Icon(
+                                                                  Icons
+                                                                      .add_box),
                                                               title: Text(
                                                                   'Create New Playlist'),
                                                               onTap: () {},
@@ -167,6 +170,8 @@ class _SongpageState extends State<Songpage> {
                                                             // Divider(),
                                                             // for (var playlist in playlists)
                                                             ListTile(
+                                                              leading: Icon(
+                                                                  Icons.folder),
                                                               title: Text(
                                                                   "already created"),
                                                               onTap: () {

@@ -4,6 +4,7 @@ import 'package:vmpa/tabs/songs.dart';
 
 import '../tabs/Album.dart';
 import '../tabs/Artist.dart';
+import '../tabs/playlist.dart';
 import '../tabs/search.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -97,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Songpage(),
                 MusicAlbum(),
                 Artist(),
-                MusicAlbum(),
+                PlaylistPage(),
 
                 // PlaylistPage(),
 

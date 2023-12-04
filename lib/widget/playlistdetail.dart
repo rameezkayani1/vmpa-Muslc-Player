@@ -1,74 +1,75 @@
 // import 'package:flutter/material.dart';
-// import 'package:on_audio_query/on_audio_query.dart';
 
-// class PlaylistDetailsPage extends StatelessWidget {
+// import 'model.dart';
+
+// class PlaylistDetailsPage extends StatefulWidget {
 //   final PlaylistModel playlist;
 
-//   const PlaylistDetailsPage({Key? key, required this.playlist}) : super(key: key);
+//   PlaylistDetailsPage({Key? key, required this.playlist}) : super(key: key);
+
+//   @override
+//   _PlaylistDetailsPageState createState() => _PlaylistDetailsPageState();
+// }
+
+// class _PlaylistDetailsPageState extends State<PlaylistDetailsPage> {
+//   List<String> playlistSongs = [];
 
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
 //       appBar: AppBar(
-//         title: Text('Playlist Details'),
+//         title: Text(widget.playlist.name),
 //       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Text(
-//               'Playlist Name: ${playlist.id}',
-//               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-//             ),
-//             SizedBox(height: 16),
-//             FutureBuilder<List<SongModel>>(
-//               future: OnAudioQuery().queryAudiosFrom (
-//                 playlist: playlist.id,
-//                 // sortType: SortType.DEFAULT,
-//               ),
-//               builder: (context, snapshot) {
-//                 if (snapshot.connectionState == ConnectionState.waiting) {
-//                   return CircularProgressIndicator();
-//                 } else if (snapshot.hasError) {
-//                   return Text('Error: ${snapshot.error}');
-//                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-//                   return Text('No songs in the playlist');
-//                 } else {
-//                   List<SongModel> songs = snapshot.data!;
+//       body: ListView.builder(
+//         itemCount: playlistSongs.length,
+//         itemBuilder: (context, index) {
+//           return ListTile(
+//             title: Text(playlistSongs[index]),
+//             // Add onTap functionality to play the song or perform other actions.
+//             onTap: () {
+//               // Implement the desired action when a song is tapped.
+//             },
+//           );
+//         },
+//       ),
+//       floatingActionButton: FloatingActionButton(
+//         onPressed: () async {
+//           // Show a dialog or navigate to a new page to add songs to the playlist.
+//           String newSong = await showDialog(
+//             context: context,
+//             builder: (context) {
+//               return AlertDialog(
+//                 title: Text('Add New Song'),
+//                 content: TextField(
+//                   decoration: InputDecoration(labelText: 'Song Name'),
+//                   onChanged: (value) => newSong = value,
+//                 ),
+//                 actions: [
+//                   TextButton(
+//                     onPressed: () {
+//                       Navigator.pop(context); // Close the dialog.
+//                     },
+//                     child: Text('Cancel'),
+//                   ),
+//                   TextButton(
+//                     onPressed: () {
+//                       // Implement the logic to add the new song to the playlist.
+//                       Navigator.pop(context, newSong);
+//                     },
+//                     child: Text('Add'),
+//                   ),
+//                 ],
+//               );
+//             },
+//           );
 
-//                   return Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: [
-//                       SizedBox(height: 16),
-//                       Text(
-//                         'Number of Songs: ${songs.length}',
-//                         style: TextStyle(fontSize: 16),
-//                       ),
-//                       SizedBox(height: 16),
-//                       Text(
-//                         'Song List:',
-//                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-//                       ),
-//                       SizedBox(height: 8),
-//                       Expanded(
-//                         child: ListView.builder(
-//                           itemCount: songs.length,
-//                           itemBuilder: (context, index) {
-//                             return ListTile(
-//                               title: Text(songs[index].title),
-//                               subtitle: Text(songs[index].artist.toString()),
-//                             );
-//                           },
-//                         ),
-//                       ),
-//                     ],
-//                   );
-//                 }
-//               },
-//             ),
-//           ],
-//         ),
+//           if (newSong != null && newSong.isNotEmpty) {
+//             setState(() {
+//               playlistSongs.add(newSong);
+//             });
+//           }
+//         },
+//         child: Icon(Icons.add),
 //       ),
 //     );
 //   }
