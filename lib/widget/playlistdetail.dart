@@ -1,76 +1,72 @@
-// import 'package:flutter/material.dart';
+// playlist_details_page.dart
 
-// import 'model.dart';
+import 'package:flutter/material.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 
-// class PlaylistDetailsPage extends StatefulWidget {
-//   final PlaylistModel playlist;
+class PlaylistDetailsPage extends StatelessWidget {
+  final PlaylistModel playlist;
 
-//   PlaylistDetailsPage({Key? key, required this.playlist}) : super(key: key);
+  PlaylistDetailsPage({required this.playlist});
 
-//   @override
-//   _PlaylistDetailsPageState createState() => _PlaylistDetailsPageState();
-// }
+  @override
+  Widget build(BuildContext context) {
+    return Stack(children: [
+      Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF1D1B29), Color(0xFF4527A0)],
+          ),
+        ),
+      ),
+      Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: Text('Playlist Details'),
+        ),
+        body: FutureBuilder<List<SongModel>>(
+          // Fetch songs for the selected playlist
+          future: fetchSongsForPlaylist(),
+          builder:
+              (BuildContext context, AsyncSnapshot<List<SongModel>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Text(
+                'No songs found in the playlist',
+                style: TextStyle(color: Colors.white),
+              );
+            } else {
+              // Display the list of songs
+              return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(snapshot.data![index].title),
+                    // subtitle: Text(snapshot.data![index].artist),
+                    // Add more song details as needed
+                  );
+                },
+              );
+            }
+          },
+        ),
+      )
+    ]);
+  }
 
-// class _PlaylistDetailsPageState extends State<PlaylistDetailsPage> {
-//   List<String> playlistSongs = [];
+  // Function to fetch songs for the selected playlist
+  Future<List<SongModel>> fetchSongsForPlaylist() async {
+    OnAudioQuery audioQuery = OnAudioQuery();
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text(widget.playlist.name),
-//       ),
-//       body: ListView.builder(
-//         itemCount: playlistSongs.length,
-//         itemBuilder: (context, index) {
-//           return ListTile(
-//             title: Text(playlistSongs[index]),
-//             // Add onTap functionality to play the song or perform other actions.
-//             onTap: () {
-//               // Implement the desired action when a song is tapped.
-//             },
-//           );
-//         },
-//       ),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: () async {
-//           // Show a dialog or navigate to a new page to add songs to the playlist.
-//           String newSong = await showDialog(
-//             context: context,
-//             builder: (context) {
-//               return AlertDialog(
-//                 title: Text('Add New Song'),
-//                 content: TextField(
-//                   decoration: InputDecoration(labelText: 'Song Name'),
-//                   onChanged: (value) => newSong = value,
-//                 ),
-//                 actions: [
-//                   TextButton(
-//                     onPressed: () {
-//                       Navigator.pop(context); // Close the dialog.
-//                     },
-//                     child: Text('Cancel'),
-//                   ),
-//                   TextButton(
-//                     onPressed: () {
-//                       // Implement the logic to add the new song to the playlist.
-//                       Navigator.pop(context, newSong);
-//                     },
-//                     child: Text('Add'),
-//                   ),
-//                 ],
-//               );
-//             },
-//           );
+    // Fetch all songs and filter based on the playlist ID
+    List<SongModel> allSongs = await audioQuery.querySongs();
+    List<SongModel> playlistSongs =
+        allSongs.where((song) => song == playlist.id).toList();
 
-//           if (newSong != null && newSong.isNotEmpty) {
-//             setState(() {
-//               playlistSongs.add(newSong);
-//             });
-//           }
-//         },
-//         child: Icon(Icons.add),
-//       ),
-//     );
-//   }
-// }
+    return playlistSongs;
+  }
+}

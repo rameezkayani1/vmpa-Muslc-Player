@@ -1,5 +1,6 @@
 class PlaylistModel {
-  final String name;
+  final int id;
+  final String playlist;
 
-  PlaylistModel({required this.name});
+  PlaylistModel({required this.id, required this.playlist});
 }

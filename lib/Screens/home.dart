@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:vmpa/Screens/test.dart';
 import 'package:vmpa/tabs/songs.dart';
 
 import '../tabs/Album.dart';
@@ -95,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             body: const TabBarView(
               children: [
-                Songpage(),
+                Songpage1(),
                 MusicAlbum(),
                 Artist(),
                 PlaylistPage(),
