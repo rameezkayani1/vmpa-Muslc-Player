@@ -4,6 +4,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 import 'package:vmpa/widget/songscontoller.dart';
 import 'package:flutter/material.dart';
 import '../Screens/playerScreen.dart';
+import 'package:share_plus/share_plus.dart';
 
 class Songpage1 extends StatefulWidget {
   const Songpage1({Key? key}) : super(key: key);
@@ -126,7 +127,21 @@ class _Songpage1State extends State<Songpage1> {
                                           ListTile(
                                             leading: Icon(Icons.share),
                                             title: Text('Share'),
-                                            onTap: () {},
+                                            onTap: () {
+                                              Get.back();
+                                              print("share");
+                                              var selectedSong =
+                                                  snapshot.data![index];
+                                              // String filePath = selectedSong
+                                              //     .filePath; // Get the path to the MP3 file
+
+                                              // Create a message with the song details
+                                              String shareMessage =
+                                                  'Check out this song: ${selectedSong.displayNameWOExt} by ${selectedSong.artist}';
+
+                                              // Share the message using the share_plus package
+                                              Share.share(shareMessage);
+                                            },
                                           ),
                                           SizedBox(
                                             height: 0,

@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:vmpa/widget/songscontoller.dart';
 import 'package:flutter/material.dart';
-// import 'package:share_plus/share_plus.dart';
+import 'package:share_plus/share_plus.dart';
 import '../Screens/playerScreen.dart';
 
 class Songpage extends StatefulWidget {
