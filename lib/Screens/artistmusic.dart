@@ -19,7 +19,7 @@ class ArtistMusicScreen extends StatefulWidget {
 }
 
 class _ArtistMusicScreenState extends State<ArtistMusicScreen> {
-  var controller = Get.find<PlayerController>();
+  var controller = Get.find<MusicController>();
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,10 @@ class _ArtistMusicScreenState extends State<ArtistMusicScreen> {
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
-          title: Text(widget.artist.artist),
+          title: Text(
+            widget.artist.artist,
+            style: TextStyle(fontSize: 16, color: Colors.white),
+          ),
         ),
         body: FutureBuilder<List<SongModel>>(
           future: controller.audioQuery.querySongs(

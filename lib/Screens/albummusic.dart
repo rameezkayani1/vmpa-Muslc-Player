@@ -13,7 +13,7 @@ class AlbumSongsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var controller = Get.find<PlayerController>();
+    var controller = Get.find<MusicController>();
 
     return Stack(
       children: [
@@ -31,7 +31,7 @@ class AlbumSongsScreen extends StatelessWidget {
             backgroundColor: Colors.transparent,
             title: Text(
               "Songs in ${album.album}",
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: 16, color: Colors.white),
             ),
           ),
           body: FutureBuilder<List<SongModel>>(

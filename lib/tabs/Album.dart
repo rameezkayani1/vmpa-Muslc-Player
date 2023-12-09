@@ -16,7 +16,7 @@ class MusicAlbum extends StatefulWidget {
 }
 
 class _MusicAlbumState extends State<MusicAlbum> {
-  var controller = Get.put(PlayerController());
+  var controller = Get.put(MusicController());
 
   @override
   Widget build(BuildContext context) {

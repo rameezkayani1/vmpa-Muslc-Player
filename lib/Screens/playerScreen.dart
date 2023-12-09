@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'dart:math';
 import '../widget/RecommendedSongs.dart';
 import '../widget/songscontoller.dart';
 
@@ -18,7 +17,7 @@ class PlayerScreen extends StatefulWidget {
 
 class _PlayerScreenState extends State<PlayerScreen> {
   bool showRecommendations = false;
-  var controller = Get.find<PlayerController>();
+  var controller = Get.find<MusicController>();
 
   @override
   Widget build(BuildContext context) {
@@ -147,6 +146,14 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                               MainAxisAlignment.spaceAround,
                                           children: [
                                             IconButton(
+                                              onPressed: () {},
+                                              icon: Icon(
+                                                Icons.favorite_outlined,
+                                                color: Colors.white,
+                                                size: 36,
+                                              ),
+                                            ),
+                                            IconButton(
                                               onPressed: () {
                                                 if (widget.data.isNotEmpty &&
                                                     controller.playindex.value >
@@ -181,15 +188,15 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                               icon: Icon(
                                                 Icons.skip_previous,
                                                 color: Colors.white,
-                                                size: 40,
+                                                size: 36,
                                               ),
                                             ),
                                             CircleAvatar(
-                                              radius: 34,
+                                              radius: 30,
                                               backgroundColor:
                                                   Colors.blueAccent,
                                               child: Transform.scale(
-                                                scale: 2.2,
+                                                scale: 2.0,
                                                 child: IconButton(
                                                   onPressed: () {
                                                     if (controller
@@ -208,7 +215,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                                         ? Icons.pause
                                                         : Icons.play_arrow,
                                                     color: Colors.white,
-                                                    size: 32,
+                                                    size: 30,
                                                   ),
                                                 ),
                                               ),
@@ -249,7 +256,29 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                               icon: Icon(
                                                 Icons.skip_next,
                                                 color: Colors.white,
-                                                size: 40,
+                                                size: 36,
+                                              ),
+                                            ),
+                                            IconButton(
+                                              onPressed: () {
+                                                List<SongModel>
+                                                    recommendedSongs =
+                                                    getRandomSongs();
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        RecommendedSongsPage(
+                                                      recommendedSongs:
+                                                          recommendedSongs,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              icon: Icon(
+                                                Icons.next_plan_sharp,
+                                                color: Colors.white,
+                                                size: 36,
                                               ),
                                             ),
                                           ],
@@ -257,34 +286,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                       ],
                                     ),
                                   ),
-                                  Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          IconButton(
-                                            onPressed: () {
-                                              List<SongModel> recommendedSongs =
-                                                  getRandomSongs();
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      RecommendedSongsPage(
-                                                    recommendedSongs:
-                                                        recommendedSongs,
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                            icon: Icon(
-                                              Icons.next_plan_sharp,
-                                              color: Colors.white,
-                                              size: 40,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                  Row(
+                                    children: [],
                                   ),
                                 ],
                               ),

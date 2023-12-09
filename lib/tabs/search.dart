@@ -5,7 +5,7 @@ import '../Screens/playerScreen.dart';
 import '../widget/songscontoller.dart';
 
 class SearchPage extends StatelessWidget {
-  final PlayerController controller = Get.put(PlayerController());
+  final MusicController controller = Get.put(MusicController());
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class SearchPage extends StatelessWidget {
 }
 
 class MusicSearchDelegate extends StatefulWidget {
-  final PlayerController controller;
+  final MusicController controller;
 
   MusicSearchDelegate({required this.controller});
 

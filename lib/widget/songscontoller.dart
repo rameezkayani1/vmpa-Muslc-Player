@@ -1,12 +1,13 @@
-import 'package:permission_handler/permission_handler.dart';
-import 'package:on_audio_query/on_audio_query.dart';
 import 'package:get/get.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-class PlayerController extends GetxController {
-  // show modelbottomsheet
-  final audioQuery = OnAudioQuery();
+class MusicController extends GetxController {
+  late OnAudioQuery audioQuery;
   final player = AudioPlayer();
+  List<PlaylistModel> playlists = [];
+  Map<int, List<SongModel>> playlistSongsMap = {};
   var playindex = 0.obs;
   var isplaying = false.obs;
   var duration = ''.obs;
@@ -18,19 +19,75 @@ class PlayerController extends GetxController {
   void onInit() {
     super.onInit();
     checkPermission();
+    initializeController();
+  }
+
+  Future<void> initializeController() async {
+    audioQuery = OnAudioQuery();
+    await fetchPlaylists();
+  }
+
+  Future<void> fetchPlaylists() async {
+    try {
+      playlists = await audioQuery.queryPlaylists();
+      await updatePlaylistSongsMap();
+    } catch (e) {
+      print('Error fetching playlists: $e');
+    }
+  }
+
+  Future<void> updatePlaylistSongsMap() async {
+    for (var playlist in playlists) {
+      List<SongModel> songs = await fetchSongsForPlaylist(playlist.id);
+      playlistSongsMap[playlist.id] = songs;
+    }
+  }
+
+  Future<bool> createNewPlaylist(String playlistName) async {
+    try {
+      bool success = await audioQuery.createPlaylist(playlistName);
+      if (success) {
+        await fetchPlaylists(); // Update the playlists after creating a new one
+      }
+      return success;
+    } catch (e) {
+      print('Error creating new playlist: $e');
+      return false;
+    }
+  }
+
+  Future<List<SongModel>> fetchSongsForPlaylist(int playlistId) async {
+    return playlistSongsMap[playlistId] ?? [];
+  }
+
+  bool isSongInPlaylist(SongModel song, int playlistId) {
+    return playlistSongsMap.containsKey(playlistId) &&
+        playlistSongsMap[playlistId]!.contains(song);
+  }
+
+  Future<void> addSongToPlaylist(int playlistId, SongModel song) async {
+    try {
+      await audioQuery.addToPlaylist(playlistId, song.id);
+      if (playlistSongsMap.containsKey(playlistId)) {
+        playlistSongsMap[playlistId]!.add(song);
+      } else {
+        playlistSongsMap[playlistId] = [song];
+      }
+      update();
+    } catch (e) {
+      print('Error adding song to playlist: $e');
+    }
   }
 
   Updateposition() {
     player.durationStream.listen((d) {
       duration.value = d.toString().split(".")[0];
       max.value = d!.inSeconds.toDouble();
-      print("durition");
     });
     player.positionStream.listen((p) {
       position.value = p.toString().split(".")[0];
       value.value = p.inSeconds.toDouble();
     });
-    print("positon");
   }
 
   changeDurationtoSecond(seconds) {
@@ -38,20 +95,7 @@ class PlayerController extends GetxController {
     player.seek(duration);
   }
 
-  // playSong(String? uri, index) {
-  //   if (isplaying) {
-  //     player.pause();
-  //     isplaying = false;
-  //     print('pause the song');
-  //   } else {
-  //     // playindex.value = index;
-  //     player.setAudioSource(AudioSource.uri(Uri.parse(uri!)));
-  //     player.play();
-  //     isplaying = true;
-  //     print('play the song');
-  //   }
-  // }
-  playSong(String? uri, index) {
+  playSong(String? uri, int index) {
     playindex.value = index;
     try {
       player.setAudioSource(
@@ -63,57 +107,13 @@ class PlayerController extends GetxController {
     } on Exception catch (e) {
       print(e.toString());
     }
-    ;
   }
-
-  // void pauseSong() {
-  //   // Implement your logic to pause the song
-  //   // Set isPlaying to false
-  //   // player.setAudioSource(AudioSource.uri(Uri.parse(uri!)));
-  //   player.pause();
-
-  //   isplaying(false);
-  //   print('Pausing the song');
-  // }
 
   checkPermission() async {
     var perm = await Permission.storage.request();
-
     if (perm.isGranted) {
     } else {
       checkPermission();
     }
   }
 }
-
-// class Playercontroller extends Getxcontroller {
-
-// final audioquery = OnAudioquery();
-
-// @override
-//  void Oninit(){
-// super.oninit();
-
-// checkPermission();
-
-// }
-
-// checkPermission() async {
-
-// var perm = await permission storge request();
-// if (perm is Grandted) {
-
-// return audioQuery querySongs(
-// ignorecase: true,
-// orderType: OrdertyopeASC_OR_SMALLER,
-// sortType: null.urlType.External,
-// );
-// esle {
-// checkPermission();
-// }
-// }
-
-// }
-
-// }
-

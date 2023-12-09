@@ -1,245 +1,299 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:vmpa/widget/songscontoller.dart';
-import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
 import '../Screens/playerScreen.dart';
+import 'package:share_plus/share_plus.dart';
 
 class Songpage extends StatefulWidget {
-  const Songpage({super.key});
+  const Songpage({Key? key}) : super(key: key);
 
   @override
   State<Songpage> createState() => _SongpageState();
 }
 
 class _SongpageState extends State<Songpage> {
-  var controller = Get.put(PlayerController());
+  var controller = Get.put(MusicController());
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      Container(
+    return Stack(
+      children: [
+        Container(
           width: double.infinity,
           decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [Color(0xFF1D1B29), Color(0xFF4527A0)]))),
-      Scaffold(
-        backgroundColor: Colors.transparent,
-        body: FutureBuilder<List<SongModel>>(
+            gradient:
+                LinearGradient(colors: [Color(0xFF1D1B29), Color(0xFF4527A0)]),
+          ),
+        ),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          body: FutureBuilder<List<SongModel>>(
             future: controller.audioQuery.querySongs(
               ignoreCase: true,
               orderType: OrderType.ASC_OR_SMALLER,
               sortType: null,
               uriType: UriType.EXTERNAL,
             ),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
+            builder: (BuildContext context,
+                AsyncSnapshot<List<SongModel>> snapshot) {
               if (snapshot.hasData) {
-                List snap = snapshot.data;
-                if (snapshot.data == null) {
+                List<SongModel> songs = snapshot.data!;
+                if (songs.isEmpty) {
                   return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (snapshot.data!.isEmpty) {
-                  return Center(
-                    child: Text("No Song Found"),
+                    child: Text("No Songs Found"),
                   );
                 } else {
-                  print("$snap ");
                   return Padding(
                     padding: EdgeInsets.all(10.0),
                     child: ListView.builder(
-                        itemCount: snap.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(32)),
-                            child: ListTile(
-                              title: Text(
-                                "${snapshot.data![index].displayNameWOExt}",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
-                                    color: Colors.white),
+                      itemCount: songs.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(32),
+                          ),
+                          child: ListTile(
+                            title: Text(
+                              "${songs[index].displayNameWOExt}",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                                color: Colors.white,
                               ),
-                              onTap: () {
-                                Get.to(
-                                  () => PlayerScreen(
-                                    data: snapshot.data!,
+                            ),
+                            onTap: () {
+                              Get.to(
+                                () => PlayerScreen(
+                                  data: songs,
+                                ),
+                                transition: Transition.downToUp,
+                              );
+                              controller.playSong(
+                                songs[index].uri,
+                                index,
+                              );
+                            },
+                            subtitle: Text(
+                              " ${songs[index].artist}",
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.white),
+                            ),
+                            leading: QueryArtworkWidget(
+                              id: songs[index].id,
+                              type: ArtworkType.AUDIO,
+                              nullArtworkWidget: Icon(
+                                Icons.music_note,
+                                color: Colors.white,
+                                size: 32,
+                              ),
+                            ),
+                            trailing: IconButton(
+                              icon: Icon(
+                                Icons.more_vert,
+                                color: Colors.white,
+                                size: 32,
+                              ),
+                              onPressed: () {
+                                showModalBottomSheet(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30.0),
                                   ),
-                                  transition: Transition.downToUp,
-                                );
-                                controller.playSong(
-                                    snapshot.data[index].uri, index);
-                                // Navigator.push(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //         builder: (context) => PlayerScreen(
-                                //               data: snapshot.data![index],
-                                //               // key: snapshot.data![index],
-                                //             ),
-                                //             controller.playSong(
-                                //       snapshot.data[index].uri, index);
-                                //             )
-                                //             );
-                              },
-                              subtitle: Text(
-                                " ${snapshot.data![index].artist}",
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.white),
-                              ),
-                              leading: QueryArtworkWidget(
-                                id: snapshot.data![index].id,
-                                type: ArtworkType.AUDIO,
-                                nullArtworkWidget: Icon(
-                                  Icons.music_note,
-                                  color: Colors.white,
-                                  size: 32,
-                                ),
-                              ),
-                              // trailing:
-                              //     // controller.playindex.value == index && controller.isplaying.value ?
-                              //     //
-                              //     //     ?
-                              //     Icon(
-                              //   Icons.play_arrow,
-                              //   color: Colors.white,
-                              //   size: 32,
-                              // )
-                              // // : null,
-                              // onTap:() {
-                              //   controller.playSong(
-                              //   snapshot.data[index].uri, index);
-                              // },
-
-                              trailing: IconButton(
-                                icon: Icon(
-                                  Icons.more_vert,
-                                  color: Colors.white,
-                                  size: 32,
-                                ),
-                                onPressed: () {
-                                  showModalBottomSheet(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30.0),
-                                    ),
-                                    context: context,
-                                    builder: (context) {
-                                      return Container(
-                                        height: 250,
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            ListTile(
-                                              leading: Icon(Icons.playlist_add),
-                                              title: Text('Ad to Playlist'),
+                                  context: context,
+                                  builder: (context) {
+                                    return Container(
+                                      height: 130,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          ListTile(
+                                              leading: Icon(Icons.share),
+                                              title: Text('Share'),
                                               onTap: () async {
-                                                print("on tap");
                                                 Get.back();
+                                                print("share");
+                                                var selectedSong =
+                                                    snapshot.data![index];
+                                                String? filePath =
+                                                    selectedSong.uri;
+                                                print(
+                                                    "${selectedSong.displayNameWOExt}");
+                                                print(filePath);
 
-                                                await Get.dialog(
-                                                  AlertDialog(
+                                                // Get the path to the audio file
+                                                try {
+                                                  await Share.shareXFiles(
+                                                    [XFile(filePath!)],
+                                                    text:
+                                                        'Check out this song: ${selectedSong.displayNameWOExt} by ${selectedSong.artist}',
+                                                  );
+                                                } catch (e) {
+                                                  print("Error sharing: $e");
+                                                }
+                                                // Check if the file path is not null or empty before sharing
+                                              }),
+                                          ListTile(
+                                            leading: Icon(Icons.playlist_add),
+                                            title: Text('Add to Playlist'),
+                                            onTap: () async {
+                                              Get.back();
+
+                                              // Fetch available playlists
+                                              List<PlaylistModel> playlists =
+                                                  controller.playlists;
+
+                                              // Show a dialog to select or create a playlist
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return AlertDialog(
                                                     shape:
                                                         RoundedRectangleBorder(
                                                       borderRadius:
                                                           BorderRadius.circular(
-                                                              20.0), // Set the radius here
+                                                              20.0),
                                                     ),
                                                     title: Text(
-                                                      'Add to Playlist',
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
+                                                        'Select or Create Playlist'),
                                                     content:
                                                         SingleChildScrollView(
-                                                      child: Container(
-                                                        height: 120,
-                                                        // width: double.infinity,
-                                                        child: Column(
-                                                          children: [
-                                                            ListTile(
-                                                              leading: Icon(
-                                                                  Icons
-                                                                      .add_box),
-                                                              title: Text(
-                                                                  'Create New Playlist'),
-                                                              onTap: () {},
+                                                      child: Column(
+                                                        children: [
+                                                          // Create a new playlist
+                                                          ListTile(
+                                                            leading: Icon(Icons
+                                                                .playlist_add),
+                                                            title: Text(
+                                                              'Create New Playlist',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .redAccent),
                                                             ),
-                                                            // Divider(),
-                                                            // for (var playlist in playlists)
-                                                            ListTile(
-                                                              leading: Icon(
-                                                                  Icons.folder),
+                                                            onTap: () {
+                                                              Get.back();
+                                                              _showCreatePlaylistDialog(
+                                                                  context,
+                                                                  songs[index]);
+                                                            },
+                                                          ),
+
+                                                          // ... existing code ...
+
+                                                          // Add to existing playlists
+                                                          ...playlists
+                                                              .map((playlist) {
+                                                            return ListTile(
+                                                              leading: Icon(Icons
+                                                                  .folder_copy),
                                                               title: Text(
-                                                                  "already created"),
-                                                              onTap: () {
-                                                                // onPressedAddToPlaylist(playlist.playlist);
+                                                                  playlist
+                                                                      .playlist),
+                                                              onTap: () async {
+                                                                _addSongToPlaylistAndShowSnackbar(
+                                                                    playlist.id,
+                                                                    songs[
+                                                                        index]);
+                                                                Navigator.pop(
+                                                                    context);
                                                               },
-                                                            ),
-                                                          ],
-                                                        ),
+                                                            );
+                                                          }).toList(),
+                                                        ],
                                                       ),
                                                     ),
-                                                    actions: <Widget>[
-                                                      TextButton(
-                                                        onPressed: () {
-                                                          // TODO: Implement logic to add the song to the playlist
-                                                          // Get.back(); // Close the dialog
-                                                        },
-                                                        child: Text('Add'),
-                                                      ),
-                                                      TextButton(
-                                                        onPressed: () {
-                                                          Get.back(); // Close the dialog
-                                                        },
-                                                        child: Text('Cancel'),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          ),
 
-                                                // Close the bottom sheet after showing the dialog box
-                                              },
-                                            ),
-                                            ListTile(
-                                              leading: Icon(Icons.share),
-                                              title: Text('Share'),
-                                              onTap: () {},
-                                            ),
-                                            SizedBox(
-                                              height: 0,
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  Icon(Icons.details_outlined),
-                                              title: Text('detail'),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  Icon(Icons.delete_forever),
-                                              title: Text('delete'),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  );
-                                  // controller.playSong(
-                                  //     snapshot.data[index].uri, index);
-                                },
-                              ),
+                                          // ... existing code ...
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
                             ),
-                          );
-                        }),
+                          ),
+                        );
+                      },
+                    ),
                   );
                 }
               } else {
                 return Center(child: CircularProgressIndicator());
               }
-            }),
-      ),
-    ]);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showAddToPlaylistSnackbar(bool success) {
+    String message = success
+        ? 'Song added to playlist successfully'
+        : 'Failed to add song to playlist';
+    Get.snackbar(
+      'Add to Playlist',
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: success ? Colors.green : Colors.red,
+      colorText: Colors.white,
+    );
+  }
+
+  // Show a dialog to create a new playlist
+  void _showCreatePlaylistDialog(BuildContext context, SongModel song) {
+    TextEditingController playlistNameController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          title: Text('Create New Playlist'),
+          content: TextField(
+            controller: playlistNameController,
+            decoration: InputDecoration(labelText: 'Playlist Name'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                String playlistName = playlistNameController.text;
+                await controller.createNewPlaylist(playlistName);
+                _addSongToPlaylistAndShowSnackbar(
+                    controller.playlists.last.id, song);
+                Navigator.pop(context);
+              },
+              child: Text('Create'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Add the song to the selected playlist and show a snackbar
+  void _addSongToPlaylistAndShowSnackbar(int playlistId, SongModel song) {
+    controller.addSongToPlaylist(playlistId, song).then((_) {
+      // Successfully added to the playlist
+      controller.updatePlaylistSongsMap().then((_) {
+        _showAddToPlaylistSnackbar(true);
+      });
+    }).catchError((error) {
+      // Failed to add to the playlist
+      _showAddToPlaylistSnackbar(false);
+    });
   }
 }

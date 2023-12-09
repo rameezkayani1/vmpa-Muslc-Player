@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:vmpa/widget/playlistcontroller.dart';
 import 'package:vmpa/widget/songscontoller.dart';
 import 'package:flutter/material.dart';
 import '../Screens/playerScreen.dart';
@@ -14,10 +16,8 @@ class Songpage1 extends StatefulWidget {
 }
 
 class _Songpage1State extends State<Songpage1> {
-  var controller = Get.put(PlayerController());
-
-  // Map to keep track of songs in playlists
-  Map<int, List<int>> playlistSongsMap = {};
+  var controller = Get.put(MusicController());
+  final MusicController playlistController = Get.put(MusicController());
 
   @override
   Widget build(BuildContext context) {
@@ -120,27 +120,35 @@ class _Songpage1State extends State<Songpage1> {
                                             onTap: () async {
                                               Get.back();
                                               await _showAddToPlaylistDialog(
-                                                  context,
-                                                  snapshot.data![index]);
+                                                context,
+                                                snapshot.data![index],
+                                              );
                                             },
                                           ),
                                           ListTile(
                                             leading: Icon(Icons.share),
                                             title: Text('Share'),
-                                            onTap: () {
+                                            onTap: () async {
                                               Get.back();
                                               print("share");
                                               var selectedSong =
                                                   snapshot.data![index];
-                                              // String filePath = selectedSong
-                                              //     .filePath; // Get the path to the MP3 file
-
-                                              // Create a message with the song details
-                                              String shareMessage =
-                                                  'Check out this song: ${selectedSong.displayNameWOExt} by ${selectedSong.artist}';
-
-                                              // Share the message using the share_plus package
-                                              Share.share(shareMessage);
+                                              String filePath =
+                                                  selectedSong.uri;
+                                              print(
+                                                  "${selectedSong.displayNameWOExt}");
+                                              print(filePath);
+                                              final XFile file =
+                                                  XFile(filePath);
+                                              try {
+                                                await Share.shareXFiles(
+                                                  [file],
+                                                  text:
+                                                      'Check out this song: ${selectedSong.displayNameWOExt} by ${selectedSong.artist}',
+                                                );
+                                              } catch (e) {
+                                                print("Error sharing: $e");
+                                              }
                                             },
                                           ),
                                           SizedBox(
@@ -183,7 +191,7 @@ class _Songpage1State extends State<Songpage1> {
     SongModel song,
   ) async {
     List<PlaylistModel> playlists =
-        await controller.audioQuery.queryPlaylists();
+        await playlistController.audioQuery.queryPlaylists();
 
     await Get.dialog(
       AlertDialog(
@@ -213,13 +221,11 @@ class _Songpage1State extends State<Songpage1> {
                     title: Text(playlist.playlist),
                     onTap: () async {
                       Get.back();
-
-                      bool isSongAlreadyInPlaylist =
-                          _isSongInPlaylist(playlist.id, song.id);
+                      print("add playlist");
+                      bool isSongAlreadyInPlaylist = playlistController
+                          .isSongInPlaylist(song, playlist.id);
 
                       if (isSongAlreadyInPlaylist) {
-                        // Get.back();
-
                         Get.snackbar(
                           'Info',
                           '${song.displayNameWOExt} is already in ${playlist.playlist}',
@@ -227,26 +233,10 @@ class _Songpage1State extends State<Songpage1> {
                           backgroundColor: Colors.blue,
                         );
                       } else {
-                        await controller.audioQuery
-                            .addToPlaylist(playlist.id, [song.id] as int);
-
-                        // Update the map to reflect the song addition to the playlist
-                        playlistSongsMap.update(
-                          playlist.id,
-                          (value) {
-                            value.add(song.id);
-                            return value;
-                          },
-                          ifAbsent: () => [song.id],
-                        );
-
-                        Get.back(); // Close the dialog
-
-                        Get.snackbar(
-                          'Success',
-                          '${song.displayNameWOExt} added to ${playlist.playlist}',
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: Colors.green,
+                        await _showAddToPlaylistDialogWithSelectedPlaylist(
+                          context,
+                          song,
+                          playlist,
                         );
                       }
                     },
@@ -264,6 +254,26 @@ class _Songpage1State extends State<Songpage1> {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _showAddToPlaylistDialogWithSelectedPlaylist(
+    BuildContext context,
+    SongModel song,
+    PlaylistModel selectedPlaylist,
+  ) async {
+    // await playlistController.addSongToPlaylistAndUpdate(
+    //   selectedPlaylist.id,
+    //   song,
+    // );
+
+    playlistController.updatePlaylistSongsMap();
+
+    Get.snackbar(
+      'Success',
+      '${song.displayNameWOExt} added to ${selectedPlaylist.playlist}',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.green,
     );
   }
 
@@ -299,25 +309,13 @@ class _Songpage1State extends State<Songpage1> {
           TextButton(
             onPressed: () async {
               if (newPlaylistName.isNotEmpty) {
-                int newPlaylistId = (await controller.audioQuery
+                int newPlaylistId = (await playlistController.audioQuery
                     .createPlaylist(newPlaylistName)) as int;
-                await controller.audioQuery
-                    .addToPlaylist(newPlaylistId, [song.id] as int);
+                await playlistController.addSongToPlaylist(newPlaylistId, song);
 
-                // Update the map to reflect the song addition to the new playlist
-                playlistSongsMap.update(
-                  newPlaylistId,
-                  (value) {
-                    value.add(song.id);
-                    return value;
-                  },
-                  ifAbsent: () => [song.id],
-                );
+                playlistController.updatePlaylistSongsMap();
 
-                Get.back(
-                    // result: PlaylistModel(
-                    //     id: newPlaylistId, playlist: newPlaylistName)
-                    );
+                Get.back();
               }
             },
             child: Text('Create'),
@@ -331,11 +329,5 @@ class _Songpage1State extends State<Songpage1> {
         ],
       ),
     );
-  }
-
-  // Method to check if a song is in a playlist
-  bool _isSongInPlaylist(int playlistId, int songId) {
-    return playlistSongsMap.containsKey(playlistId) &&
-        playlistSongsMap[playlistId]!.contains(songId);
   }
 }

@@ -6,7 +6,7 @@ import '../Screens/playerScreen.dart';
 
 class RecommendedSongsPage extends StatelessWidget {
   final List<SongModel> recommendedSongs;
-  final PlayerController controller = Get.find<PlayerController>();
+  final MusicController controller = Get.find<MusicController>();
 
   RecommendedSongsPage({Key? key, required this.recommendedSongs})
       : super(key: key);
