@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:just_audio/just_audio.dart';
@@ -65,18 +66,58 @@ class MusicController extends GetxController {
         playlistSongsMap[playlistId]!.contains(song);
   }
 
+  // Future<void> addSongToPlaylist(int playlistId, SongModel song) async {
+  //   try {
+  //     await audioQuery.addToPlaylist(playlistId, song.id);
+  //     if (playlistSongsMap.containsKey(playlistId)) {
+  //       playlistSongsMap[playlistId]!.add(song);
+  //     } else {
+  //       playlistSongsMap[playlistId] = [song];
+  //     }
+  //     update();
+  //   } catch (e) {
+  //     print('Error adding song to playlist: $e');
+  //   }
+  // }
   Future<void> addSongToPlaylist(int playlistId, SongModel song) async {
     try {
-      await audioQuery.addToPlaylist(playlistId, song.id);
-      if (playlistSongsMap.containsKey(playlistId)) {
-        playlistSongsMap[playlistId]!.add(song);
+      // Check if the song is already in the playlist
+      if (!isSongInPlaylist(song, playlistId)) {
+        await audioQuery.addToPlaylist(playlistId, song.id);
+
+        // Update the local playlistSongsMap
+        if (playlistSongsMap.containsKey(playlistId)) {
+          playlistSongsMap[playlistId]!.add(song);
+        } else {
+          playlistSongsMap[playlistId] = [song];
+        }
+
+        update();
+        _showAddToPlaylistSnackbar(true);
       } else {
-        playlistSongsMap[playlistId] = [song];
+        // Show a snackbar indicating that the song is already in the playlist
+        _showAddToPlaylistSnackbar(false);
       }
-      update();
     } catch (e) {
       print('Error adding song to playlist: $e');
+      _showAddToPlaylistSnackbar(false);
     }
+  }
+
+  void _showAddToPlaylistSnackbar(bool success) {
+    String message = success
+        ? 'Song added to playlist successfully'
+        : 'Failed to add song to playlist';
+    if (!success) {
+      message = 'Song is already in the playlist';
+    }
+    Get.snackbar(
+      'Add to Playlist',
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: success ? Colors.green : Colors.red,
+      colorText: Colors.white,
+    );
   }
 
   Updateposition() {

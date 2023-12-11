@@ -1,8 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class IntroScreen extends StatelessWidget {
+class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
+
+  @override
+  State<IntroScreen> createState() => _IntroScreenState();
+}
+
+class _IntroScreenState extends State<IntroScreen> {
+  @override
+  void initState() {
+    super.initState();
+    checkFirstSeen();
+  }
+
+  Future<void> checkFirstSeen() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool _seen = (prefs.getBool('seen') ?? false);
+
+    if (!_seen) {
+      // Show the introduction screen
+      await prefs.setBool('seen', true);
+    } else {
+      // User has seen the introduction screen before, navigate to HomeScreen
+      Navigator.pushReplacementNamed(context, "HomeScreen");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,16 +60,16 @@ class IntroScreen extends StatelessWidget {
                 "Share Your Playlist",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              bodyWidget:
-                  const Text("Discover and share your favorite tunes with ease "),
+              bodyWidget: const Text(
+                  "Discover and share your favorite tunes with ease "),
               image: Image.asset("assets/images/image3.png",
                   height: 400, width: double.infinity))
         ],
         onDone: () {
-          Navigator.pushNamed(context, "HomeScreen");
+          Navigator.pushReplacementNamed(context, "HomeScreen");
         },
         onSkip: () {
-          Navigator.pushNamed(context, "HomeScreen");
+          Navigator.pushReplacementNamed(context, "HomeScreen");
         },
         showSkipButton: true,
         skip: const Text(

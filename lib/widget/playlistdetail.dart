@@ -45,7 +45,13 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
               List<SongModel> songs = snapshot.data!;
               if (songs.isEmpty) {
                 return Center(
-                  child: Text("No Songs Found in Playlist"),
+                  child: Text(
+                    "No Songs Found in Playlist",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.white),
+                  ),
                 );
               } else {
                 return Padding(

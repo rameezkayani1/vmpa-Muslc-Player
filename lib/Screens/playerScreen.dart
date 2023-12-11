@@ -56,7 +56,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                         nullArtworkWidget: Icon(
                           Icons.music_note,
                           color: Colors.white,
-                          size: 100,
+                          size: 120,
                         ),
                       ),
                     ),
@@ -148,7 +148,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                             IconButton(
                                               onPressed: () {},
                                               icon: Icon(
-                                                Icons.favorite_outlined,
+                                                Icons.shuffle,
                                                 color: Colors.white,
                                                 size: 36,
                                               ),

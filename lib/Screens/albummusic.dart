@@ -86,51 +86,16 @@ class AlbumSongsScreen extends StatelessWidget {
                             color: Colors.white,
                           ),
                         ),
-                        trailing: IconButton(
-                          icon: Icon(
-                            Icons.more_vert,
-                            color: Colors.white,
-                            size: 32,
-                          ),
-                          onPressed: () {
-                            showModalBottomSheet(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                              context: context,
-                              builder: (context) {
-                                return Container(
-                                  height: 250,
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      ListTile(
-                                        leading: Icon(Icons.playlist_add),
-                                        title: Text('Add to Playlist'),
-                                      ),
-                                      ListTile(
-                                        leading: Icon(Icons.share),
-                                        title: Text('Share'),
-                                      ),
-                                      SizedBox(
-                                        height: 0,
-                                      ),
-                                      ListTile(
-                                        leading: Icon(Icons.details_outlined),
-                                        title: Text('Details'),
-                                      ),
-                                      ListTile(
-                                        leading: Icon(Icons.delete_forever),
-                                        title: Text('Delete'),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        ),
+                        // trailing: IconButton(
+                        //   icon: Icon(
+                        //     Icons.more_vert,
+                        //     color: Colors.white,
+                        //     size: 32,
+                        //   ),
+                        //   onPressed: () {
+
+                        //   },
+                        //   ),
                       );
                     },
                   ),

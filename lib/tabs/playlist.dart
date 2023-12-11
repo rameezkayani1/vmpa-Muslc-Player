@@ -36,7 +36,13 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 List<PlaylistModel> playlists = snapshot.data!;
                 if (playlists.isEmpty) {
                   return Center(
-                    child: Text("No Playlists Found"),
+                    child: Text(
+                      "No Playlists Found",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.white),
+                    ),
                   );
                 } else {
                   return GridView.builder(
@@ -85,8 +91,57 @@ class _PlaylistPageState extends State<PlaylistPage> {
               }
             },
           ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              // Handle the tap to create a new playlist
+              _showCreatePlaylistDialog(context);
+            },
+            child: Icon(
+              Icons.playlist_add,
+              color: Colors.white,
+            ),
+            backgroundColor: Colors.blue,
+          ),
         ),
       ],
+    );
+  }
+
+  // Show a dialog to create a new playlist
+  void _showCreatePlaylistDialog(BuildContext context) {
+    TextEditingController playlistNameController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          title: Text('Create New Playlist'),
+          content: TextField(
+            controller: playlistNameController,
+            decoration: InputDecoration(labelText: 'Playlist Name'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                String playlistName = playlistNameController.text;
+                // Handle creating a new playlist here
+                await controller.createNewPlaylist(playlistName);
+                Navigator.pop(context);
+              },
+              child: Text('Create'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
