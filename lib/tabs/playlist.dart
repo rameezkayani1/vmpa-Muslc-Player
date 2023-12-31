@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:vmpa/Screens/playlistdetail.dart';
 
-import '../widget/playlistdetail.dart';
 import '../widget/songscontoller.dart';
 
 class PlaylistPage extends StatefulWidget {

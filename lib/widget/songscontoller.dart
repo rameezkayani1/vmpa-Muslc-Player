@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class MusicController extends GetxController {
   late OnAudioQuery audioQuery;
@@ -30,12 +31,32 @@ class MusicController extends GetxController {
 
   Future<void> fetchPlaylists() async {
     try {
-      playlists = await audioQuery.queryPlaylists();
-      await updatePlaylistSongsMap();
+      var status = await Permission.storage.status;
+      if (status.isGranted) {
+        playlists = await audioQuery.queryPlaylists();
+        await updatePlaylistSongsMap();
+      } else {
+        // Request permission and handle the response
+        var result = await Permission.storage.request();
+        if (result.isGranted) {
+          await fetchPlaylists(); // Retry fetching playlists after permission is granted
+        } else {
+          // Handle permission denied scenario
+        }
+      }
     } catch (e) {
       print('Error fetching playlists: $e');
     }
   }
+
+  // Future<void> fetchPlaylists() async {
+  //   try {
+  //     playlists = await audioQuery.queryPlaylists();
+  //     await updatePlaylistSongsMap();
+  //   } catch (e) {
+  //     print('Error fetching playlists: $e');
+  //   }
+  // }
 
   Future<void> updatePlaylistSongsMap() async {
     for (var playlist in playlists) {
@@ -150,11 +171,34 @@ class MusicController extends GetxController {
     }
   }
 
+  // void checkPermission() async {
+  //   final plugin = DeviceInfoPlugin();
+  //   final android = await plugin.androidInfo;
+
+  //   final perm = android.version.sdkInt < 33
+  //       ? await Permission.storage.request()
+  //       : PermissionStatus.granted;
+
+  //   if (perm == PermissionStatus.granted) {
+  //     print("granted");
+  //   }
+  //   if (perm == PermissionStatus.denied) {
+  //     print("denied");
+  //   }
+  //   if (perm == PermissionStatus.permanentlyDenied) {
+  //     openAppSettings();
+  //   }
+  // }
+
   checkPermission() async {
     var perm = await Permission.storage.request();
     if (perm.isGranted) {
-    } else {
-      checkPermission();
+      print("granted");
+    } else if (perm.isDenied) {
+      print("denied");
+      openAppSettings();
+    } else if (perm.isPermanentlyDenied) {
+      openAppSettings();
     }
   }
 }

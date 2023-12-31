@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vmpa/tabs/songs.dart';
-
 import '../tabs/Album.dart';
 import '../tabs/Artist.dart';
 import '../tabs/playlist.dart';
@@ -106,6 +105,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 // playlist(),
               ],
             ),
+            // bottomNavigationBar: SizedBox(
+            //   // ignore: sort_child_properties_last
+            //   child: AdWidget(
+            //     ad: AdmobHelper.getBannerAd()..load(),
+            //     key: UniqueKey(),
+            //   ),
+            //   height: 60,
+            //   width: MediaQuery.of(context).size.width,
+            // ),
           ),
         ]));
   }

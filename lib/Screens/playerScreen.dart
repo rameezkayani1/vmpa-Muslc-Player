@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import '../widget/RecommendedSongs.dart';
+import 'package:vmpa/Screens/RecommendedSongs.dart';
 import '../widget/songscontoller.dart';
 
 class PlayerScreen extends StatefulWidget {
